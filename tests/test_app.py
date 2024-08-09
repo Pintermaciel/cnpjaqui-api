@@ -56,7 +56,28 @@ def test_update_user(client):
     }
 
 
+def test_update_user_404(client):
+    non_existent_user_id = 0
+    update_payload = {
+        'username': 'New Name',
+        'email': 'newemail@example.com',
+        'password': 'newpassword',
+    }
+    response = client.put(
+        f'/users/{non_existent_user_id}', json=update_payload
+    )
+
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
+
+
 def test_delete_user(client):
     response = client.delete('/users/1')
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': 'User deleted'}
+
+
+def test_delete_user_404(client):
+    response = client.delete('/users/100')
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {'detail': 'User not found'}
